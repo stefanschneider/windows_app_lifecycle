@@ -20,7 +20,7 @@ namespace Soldier
             var containerRootPath = System.IO.Directory.GetCurrentDirectory();
             var containerID = new DirectoryInfo(containerRootPath).Name;
             //HARDCODE LOCATION OF ZIPFILE
-            var zipFileLocation = "Nora.zip";
+            var zipFileLocation = "*.zip";
 
             //CRAZY MSDEPLOY COMMAND LINE.  THIS SHOULD BE MADE BETTERER.
             var deployCommand = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\"";         
