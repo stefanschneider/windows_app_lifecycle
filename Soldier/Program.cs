@@ -20,11 +20,20 @@ namespace Soldier
             var containerRootPath = System.IO.Directory.GetCurrentDirectory();
             var containerID = new DirectoryInfo(containerRootPath).Name;
             //HARDCODE LOCATION OF ZIPFILE
-            var zipFileLocation = "*.zip";
+            var files = System.IO.Directory.GetFiles(Path.Combine(containerRootPath, "webdeploy"));
+            string file;
+            try
+            {
+             file = files.Single(x => x.EndsWith(".zip"));
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Must have exactly one zip file in webdeploy folder.", e);
+            }
 
             //CRAZY MSDEPLOY COMMAND LINE.  THIS SHOULD BE MADE BETTERER.
             var deployCommand = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\"";         
-            var deployCommandArgs = "-verb:sync -source:package="+zipFileLocation+" -dest:auto -setParam:name='IIS Web Application Name',value=\"" + containerID + "\" -presync:runCommand='\"C:\\Windows\\System32\\inetsrv\\appcmd set site " + containerID + " /bindings:http/*:8080:'";
+            var deployCommandArgs = "-verb:sync -source:package="+ file +" -dest:auto -setParam:name='IIS Web Application Name',value=\"" + containerID + "\" -presync:runCommand='\"C:\\Windows\\System32\\inetsrv\\appcmd set site " + containerID + " /bindings:http/*:8080:'";
 
             ProcessStartInfo startInfo;
             startInfo = new ProcessStartInfo(deployCommand, deployCommandArgs);
