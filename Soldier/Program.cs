@@ -43,9 +43,6 @@ namespace Soldier
             process.Start();
             process.WaitForExit();
 
-            var stockWebConfig = Path.Combine(containerRootPath, "tmp", "circus", "Web.config");
-            var webConfigDestination = Path.Combine(containerRootPath, "Web.config");
-            File.Copy(stockWebConfig, webConfigDestination);
             ServerManager serverManager = ServerManager.OpenRemote("localhost");
             Site site = serverManager.Sites[containerID];
             site.Start();
