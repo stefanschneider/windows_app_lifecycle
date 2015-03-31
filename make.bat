@@ -3,6 +3,9 @@ SET PATH=%PATH%;%WINDIR%\Microsoft.NET\Framework64\v4.0.30319;%WINDIR%\SysNative
 where msbuild
 if errorLevel 1 ( echo "msbuild was not found on PATH" && exit /b 1 )
 
+where dism
+if errorLevel 1 ( echo "dism was not found on PATH" && exit /b 1 )
+
 :: enable some features
 dism /online /Enable-Feature /FeatureName:IIS-WebServer /All /NoRestart 
 dism /online /Enable-Feature /FeatureName:IIS-WebSockets /All /NoRestart 
