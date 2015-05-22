@@ -61,7 +61,7 @@ namespace Builder
             if (executables.Any())
             {
                 if (executables.Count() > 1) throw new Exception("Directory contained more than 1 executable file.");
-                ExecutionMetadata.StartCommand = executables.First();
+                ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
             }
             else if (files.Where((x) => x.ToLower().EndsWith(@"\web.config")).Any())
             {

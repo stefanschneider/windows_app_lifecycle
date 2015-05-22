@@ -42,13 +42,13 @@ namespace Builder.Tests
 
                 it["sets the exe as the start command (CF)"] = () =>
                 {
-                    obj.DetectedStartCommand.Web.should_be(@"app\jane.exe");
+                    obj.DetectedStartCommand.Web.should_be(@"jane.exe");
                 };
 
                 it["sets the exe as the start command (Diego)"] = () =>
                 {
-                    obj.ExecutionMetadata.StartCommand.should_be(@"app\jane.exe");
-                    obj.ExecutionMetadata.StartCommandArgs.should_be_null();
+                    obj.ExecutionMetadata.StartCommand.should_be(@"jane.exe");
+                    obj.ExecutionMetadata.StartCommandArgs.should_be_empty();
                 };
             };
 
