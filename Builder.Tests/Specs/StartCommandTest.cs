@@ -90,7 +90,19 @@ namespace Builder.Tests
                     exception.should_not_be_null();
                     exception.Message.should_be("No runnable application found.");
                 };
+            };
 
+            context["both web.config and an exe file exist"] = () =>
+            {
+                before = () => files = new List<string> { "foo.exe", "Web.config" };
+                act = () => obj = new OutputMetadata(files);
+
+                it["goes with the Web.config"] = () =>
+                {
+                    obj.DetectedStartCommand.Web.should_be("tmp/lifecycle/WebAppServer.exe .");
+                    obj.ExecutionMetadata.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                    obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] { "." });
+                };
             };
         }
     }

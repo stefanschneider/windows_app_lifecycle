@@ -55,22 +55,24 @@ namespace Builder
             DetectedStartCommand = new DetectedStartCommand();
         }
 
-        public OutputMetadata(IEnumerable<string> files) : this()
+        public OutputMetadata(IList<string> files) : this()
         {
-            var executables = files.Where((x) => x.EndsWith(".exe"));
-            if (executables.Any())
-            {
-                if (executables.Count() > 1) throw new Exception("Directory contained more than 1 executable file.");
-                ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
-            }
-            else if (files.Where((x) => x.ToLower().EndsWith(@"\web.config")).Any())
+            if (files.Any((x) => Path.GetFileName(x).ToLower() == "web.config"))
             {
                 ExecutionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
                 ExecutionMetadata.StartCommandArgs = new string[] {"."};
             }
-            else
-            {
-                throw new Exception("No runnable application found.");
+            else {
+                var executables = files.Where((x) => x.EndsWith(".exe")).ToList();
+                if (executables.Any())
+                {
+                    if (executables.Count() > 1) throw new Exception("Directory contained more than 1 executable file.");
+                    ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
+                }
+                else
+                {
+                    throw new Exception("No runnable application found.");
+                }
             }
             DetectedStartCommand.Web = ExecutionMetadata.StartCommand;
             if (ExecutionMetadata.StartCommandArgs.Any())
@@ -94,7 +96,7 @@ namespace Builder
 
         private static void GenerateOutputMetadata(string appPath, string fileName)
         {
-            var obj = new OutputMetadata(Directory.EnumerateFiles(appPath));
+            var obj = new OutputMetadata(Directory.EnumerateFiles(appPath).ToList());
             File.WriteAllText(Directory.GetCurrentDirectory() + fileName, JsonConvert.SerializeObject(obj));
         }
 
