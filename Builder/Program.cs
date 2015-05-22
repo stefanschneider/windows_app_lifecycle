@@ -9,6 +9,12 @@ namespace Builder
 
     public class ExecutionMetadata
     {
+        public ExecutionMetadata()
+        {
+            StartCommand = "";
+            StartCommandArgs = new string[]{};
+        }
+
         [JsonProperty("start_command")]
         public string StartCommand
         {
@@ -67,7 +73,7 @@ namespace Builder
                 throw new Exception("No runnable application found.");
             }
             DetectedStartCommand.Web = ExecutionMetadata.StartCommand;
-            if (ExecutionMetadata.StartCommandArgs != null)
+            if (ExecutionMetadata.StartCommandArgs.Any())
             {
                 DetectedStartCommand.Web += " " + String.Join(" ", ExecutionMetadata.StartCommandArgs);
             }
