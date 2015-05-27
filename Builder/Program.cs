@@ -6,57 +6,11 @@ using System.Linq;
 
 namespace Builder
 {
-
-    public class ExecutionMetadata
+    public class Program
     {
-        public ExecutionMetadata()
+        private static ExecutionMetadata CreateExecutionMetadata(IList<string> files)
         {
-            StartCommand = "";
-            StartCommandArgs = new string[] { };
-        }
-
-        [JsonProperty("start_command")]
-        public string StartCommand
-        {
-            get;
-            set;
-        }
-
-        [JsonProperty("start_command_args")]
-        public string[] StartCommandArgs
-        {
-            get;
-            set;
-        }
-    }
-
-    public class DetectedStartCommand
-    {
-        [JsonProperty("web")]
-        public string Web { get; set; }
-    }
-
-    public class OutputMetadata
-    {
-        public ExecutionMetadata ExecutionMetadata { get; set; }
-
-        [JsonProperty("execution_metadata")]
-        public string execution_metadata
-        {
-            get { return JsonConvert.SerializeObject(ExecutionMetadata); }
-        }
-
-        [JsonProperty("detected_start_command")]
-        public DetectedStartCommand DetectedStartCommand { get; set; }
-
-        public OutputMetadata()
-        {
-            ExecutionMetadata = new ExecutionMetadata();
-            DetectedStartCommand = new DetectedStartCommand();
-        }
-
-        public OutputMetadata(IList<string> files) : this()
-        {
+            var executionMetadata = new ExecutionMetadata();
             var procfiles = files.Where(x => Path.GetFileName(x).ToLower() == "procfile").ToList();
             var executables = files.Where(x => x.EndsWith(".exe")).ToList();
             if (procfiles.Any())
@@ -66,8 +20,8 @@ namespace Builder
                 if (webline.Any())
                 {
                     var contents = webline.First().Substring(4).Trim().Split(new[] { ' ' });
-                    ExecutionMetadata.StartCommand = contents[0];
-                    ExecutionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
+                    executionMetadata.StartCommand = contents[0];
+                    executionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
                 }
                 else
                 {
@@ -76,29 +30,23 @@ namespace Builder
             }
             else if (files.Any(x => Path.GetFileName(x).ToLower() == "web.config"))
             {
-                ExecutionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
-                ExecutionMetadata.StartCommandArgs = new[] { "." };
+                executionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
+                executionMetadata.StartCommandArgs = new[] { "." };
             }
             else if (executables.Any())
             {
                 if (executables.Count() > 1)
                     throw new Exception("Directory contained more than 1 executable file.");
-                ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
+                executionMetadata.StartCommand = Path.GetFileName(executables.First());
             }
             else
             {
                 throw new Exception("No runnable application found.");
             }
-            DetectedStartCommand.Web = ExecutionMetadata.StartCommand;
-            if (ExecutionMetadata.StartCommandArgs.Any())
-            {
-                DetectedStartCommand.Web += " " + String.Join(" ", ExecutionMetadata.StartCommandArgs);
-            }
-        }
-    }
 
-    public class Program
-    {
+            return executionMetadata;
+        }
+
         public static void Run(Options options)
         {
             var appPath = Directory.GetCurrentDirectory() + options.BuildDir;
@@ -111,7 +59,12 @@ namespace Builder
 
         private static void GenerateOutputMetadata(string appPath, string fileName)
         {
-            var obj = new OutputMetadata(Directory.EnumerateFiles(appPath).ToList());
+            var files = Directory.EnumerateFiles(appPath).ToList();
+            var executionMetadata = CreateExecutionMetadata(files);
+            var obj = new OutputMetadata()
+            {
+                ExecutionMetadata = executionMetadata,
+            };
             File.WriteAllText(Directory.GetCurrentDirectory() + fileName, JsonConvert.SerializeObject(obj));
         }
 
