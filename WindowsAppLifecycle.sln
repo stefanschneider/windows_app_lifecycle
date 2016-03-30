@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08426B
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
-		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppServer", "WebAppServer\WebAppServer.csproj", "{DC9F6EDC-5779-481C-9424-7C4CD63620B3}"
@@ -18,6 +17,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Detect", "Detect\Detect.csproj", "{3E86C4BF-3BA2-4B04-BFD9-D3D4E019D0CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compile", "Compile\Compile.csproj", "{7B3DE7E3-6F3A-4710-969B-57339B895029}"
+	ProjectSection(ProjectDependencies) = postProject
+		{74217BBF-73AF-4F95-9116-FA86C9830718} = {74217BBF-73AF-4F95-9116-FA86C9830718}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Release", "Release\Release.csproj", "{8CF1FC87-5C06-4846-B344-81ECDEA96682}"
 EndProject
