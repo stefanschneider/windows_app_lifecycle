@@ -16,8 +16,26 @@ namespace Launcher
         public string[] StartCommandArgs { get; set; }
     }
 
+
     internal class Program
     {
+        private static string NormalizePath(string path)
+        {
+            if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 3) // Windows Server 2012 R2
+            {
+                return Directory.GetCurrentDirectory() + path;
+            }
+            else
+            {
+                if (Path.GetPathRoot(path) == "\\" || Path.GetPathRoot(path) == "")
+                {
+                    return Path.GetFullPath("C:\\" + path);
+                }
+
+                return path;
+            }
+        }
+
         private static int Main(string[] args)
         {
             if (args.Length < 2)
@@ -26,8 +44,7 @@ namespace Launcher
                 return 1;
             }
 
-            var containerRoot = Directory.GetCurrentDirectory();
-            var workingDirectory = Path.Combine(containerRoot, args[0]);
+            var workingDirectory = NormalizePath(args[0]);
             var executablePathAndArgs = args[1];
 
             if (String.IsNullOrWhiteSpace(executablePathAndArgs))
@@ -37,7 +54,7 @@ namespace Launcher
             }
             if (executablePathAndArgs[0] == '/')
             {
-                executablePathAndArgs = containerRoot + executablePathAndArgs;
+                executablePathAndArgs = NormalizePath(executablePathAndArgs);
             }
             Console.Out.WriteLine("Running {0}", executablePathAndArgs);
 

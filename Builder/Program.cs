@@ -192,6 +192,21 @@ namespace Builder
             }
         }
 
+        private static string NormalizePath(string path)
+        {
+            if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 3) // Windows Server 2012 R2
+            {
+                return Directory.GetCurrentDirectory() + path;
+            } else {
+                if (Path.GetPathRoot(path) == "\\" || Path.GetPathRoot(path) == "")
+                {
+                    return Path.GetFullPath("C:\\" + path);
+                }
+
+                return path;
+            }
+        }
+
         static void Main(string[] args)
         {
             SanitizeArgs(args);
@@ -206,16 +221,14 @@ namespace Builder
 
         private static void Run(Options options)
         {
-            var rootDir = Directory.GetCurrentDirectory();
+            var appPath = NormalizePath(options.BuildDir);
+            var buildpacksDir = NormalizePath(options.BuildpacksDir);
 
-            var appPath = rootDir + options.BuildDir;
-            var buildpacksDir = rootDir + options.BuildpacksDir;
-
-            var buildCacheDir = rootDir + options.BuildArtifactsCacheDir;
+            var buildCacheDir = NormalizePath(options.BuildArtifactsCacheDir);
             Directory.CreateDirectory(buildCacheDir);
 
-            var outputCache = rootDir + options.OutputBuildArtifactsCache;
-            var outputDropletPath = rootDir + options.OutputDroplet;
+            var outputCache = NormalizePath(options.OutputBuildArtifactsCache);
+            var outputDropletPath = NormalizePath(options.OutputDroplet);
 
             string detectedBuildpack = "";
             string detectedBuildpackDir = "";
@@ -308,7 +321,7 @@ namespace Builder
                 ExecutionMetadata = ""
             };
 
-            File.WriteAllText(rootDir + options.OutputMetadata, JsonConvert.SerializeObject(outputMetadata));
+            File.WriteAllText(NormalizePath(options.OutputMetadata), JsonConvert.SerializeObject(outputMetadata));
 
             TarGZFile.CreateFromDirectory(buildCacheDir + "\\", outputCache);
             TarGZFile.CreateFromDirectory(appPath, outputDropletPath);
