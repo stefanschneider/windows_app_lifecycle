@@ -118,18 +118,18 @@ namespace Builder
         }
 
         private static void SanitizeProxyEnvVars()
-		{
-			// Sanitize empty proxy related environment variables. This will avoid issues
-			// with the libgit2 library when the proxy related environment variables exist but are empty.
-			foreach (string env in (new string[] { "HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "NO_PROXY", "no_proxy" }))
-			{
-				string envValue = Environment.GetEnvironmentVariable(env);
-				if (envValue == null || string.IsNullOrWhiteSpace(envValue))
-				{
-					Environment.SetEnvironmentVariable(env, null);
-				}
-			}
-		}
+        {
+            // Sanitize empty proxy related environment variables. This will avoid issues
+            // with the libgit2 library when the proxy related environment variables exist but are empty.
+            foreach (string env in (new string[] { "HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "NO_PROXY", "no_proxy" }))
+            {
+                string envValue = Environment.GetEnvironmentVariable(env);
+                if (envValue == null || string.IsNullOrWhiteSpace(envValue))
+                {
+                    Environment.SetEnvironmentVariable(env, null);
+                }
+            }
+        }
 
         private static void DownloadAndExtractZip(Uri source, string destination)
         {
@@ -197,7 +197,9 @@ namespace Builder
             if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 3) // Windows Server 2012 R2
             {
                 return Directory.GetCurrentDirectory() + path;
-            } else {
+            }
+            else
+            {
                 if (Path.GetPathRoot(path) == "\\" || Path.GetPathRoot(path) == "")
                 {
                     return Path.GetFullPath("C:\\" + path);
